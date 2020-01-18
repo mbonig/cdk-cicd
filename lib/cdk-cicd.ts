@@ -1,4 +1,4 @@
-import {Construct, StackProps} from '@aws-cdk/core';
+import {Construct} from '@aws-cdk/core';
 import {Artifact, IAction, Pipeline} from '@aws-cdk/aws-codepipeline';
 import {
     CloudFormationCreateUpdateStackAction,
@@ -14,7 +14,7 @@ import {
 } from '@aws-cdk/aws-codebuild';
 import {Bucket} from '@aws-cdk/aws-s3';
 import {CloudFormationCapabilities} from '@aws-cdk/aws-cloudformation';
-import {PolicyStatement} from '@aws-cdk/aws-iam';
+import {CdkCicdProps} from "./cdk-cicd-props";
 
 export class CdkCicd extends Construct {
     codePipeline: Pipeline | undefined;
@@ -157,17 +157,6 @@ export class CdkCicd extends Construct {
         };
         return PASSTHROUGH_BUILDSPEC;
     }
-}
-
-export interface CdkCicdProps extends StackProps {
-    additionalPolicyStatements?: PolicyStatement[]
-    readonly buildspec?: any;
-    hasLambdas?: boolean;
-    readonly stackName: string;
-
-    sourceAction(sourceArtifact: Artifact): IAction;
-
-    createBuildSpec(): any;
 }
 
 

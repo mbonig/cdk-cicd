@@ -2,11 +2,17 @@
 
 The purpose of this Construct is to build a CodePipeline stack that builds and deploys a CDK Stack.
 
+# What it creates
+
+This will create a CodePipeline pipeline that builds a CDK module and then deploys it to CloudFormation as a Stack.
+
 ## Usage
 
 Refer to the [bin/automation.ts](bin/automation.ts) for an example.
 
-## Properties
+## Properties [lib/cdk-cicd-props.ts](lib/cdk-cicd-props.ts)
+
+
 | prop | description | usage 
 | --- | --- | ---
 | stackName | The CloudFormation Stack to create/update | must be a valid CFN stack name (e.g. some-stack-name) 
