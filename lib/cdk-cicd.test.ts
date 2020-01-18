@@ -9,7 +9,11 @@ let mockAction: IAction;
 let mockBuildSpec = {
     version: '0.2',
     phases: {},
-    artifacts: {},
+    artifacts: {
+        "secondary-artifacts": {
+            cfn_template: {files: "template.yaml"}
+        }
+    },
 };
 let app: App;
 
@@ -30,10 +34,8 @@ function createStack() {
             );
             return mockAction;
         },
-        createBuildSpec: () => (mockBuildSpec),
-        additionalPolicyStatements:[new PolicyStatement({
-
-        })]
+        createBuildSpec: () => mockBuildSpec,
+        additionalPolicyStatements: [new PolicyStatement({})]
     });
     return stack;
 }
@@ -47,7 +49,7 @@ test('uses the provides source stage', () => {
     const stack = createStack();
 
     const construct = stack.node.findChild('testing');
-    const codePipeline = <Pipeline>construct.node.findChild('thing-pipeline');
+    const codePipeline = <Pipeline>construct.node.findChild('testing-pipeline');
     expect(codePipeline.stages[0].actions[0]).toBe(mockAction);
 });
 
@@ -92,7 +94,7 @@ test("throws error if sourceAction doesn't use the artifact", () => {
                     }
                 );
             },
-            createBuildSpec: () => ({})
+            createBuildSpec: () => mockBuildSpec
         });
         throw new Error("The expected exception wasn't thrown by the code.");
     } catch (err) {
@@ -116,7 +118,7 @@ test("Doesn't handle lambdas by default", () => {
     const stack = createStack();
 
     const construct = stack.node.findChild('testing');
-    const codePipeline = <Pipeline>construct.node.findChild('thing-pipeline');
+    const codePipeline = <Pipeline>construct.node.findChild('testing-pipeline');
     expect(codePipeline.stages[2].actions.length).toBe(1);
 
     expect(stack).toHaveResource("AWS::CodeBuild::Project", {
@@ -151,11 +153,22 @@ test("adds lambda requirements ", () => {
             );
             return mockAction;
         },
-        createBuildSpec: () => (mockBuildSpec)
+        createBuildSpec: () => {
+            return {
+                version: '0.2',
+                phases: {},
+                artifacts: {
+                    "secondary-artifacts": {
+                        "cfn_template": {files: "template.yaml"},
+                        "lambda_package": {files: ["*.zip"], "discard-paths": true}
+                    }
+                },
+            };
+        }
     });
 
     const construct = stack.node.findChild('testing');
-    const codePipeline = <Pipeline>construct.node.findChild('thing-pipeline');
+    const codePipeline = <Pipeline>construct.node.findChild('testing-pipeline');
     expect(codePipeline.stages[2].actions.length).toBe(2);
 
     expect(stack).toHaveResource("AWS::CodeBuild::Project", {
@@ -166,7 +179,7 @@ test("adds lambda requirements ", () => {
                     "Name": "S3_LAMBDA_BUCKET",
                     "Type": "PLAINTEXT",
                     "Value": {
-                        "Ref": "testingthingartifactbucket78DACB04"
+                        "Ref": "testingtestingartifactbucket7643106D"
                     }
                 }
             ],
@@ -188,3 +201,184 @@ test('adds provided additional role policies to the codebuild project', () => {
 
 });
 
+test("throws error if buildspec doesn't properly have the cfn_template output artifacts", () => {
+    app = new App();
+
+    const stack = new Stack(app, 'test');
+    try {
+        new CdkCicd(stack, 'testing', {
+            stackName: 'thing',
+            sourceAction: (sourceArtifact) => {
+                mockAction = new GitHubSourceAction({
+                        actionName: "pull-from-github",
+                        owner: "mbonig",
+                        repo: "secure-bucket",
+                        oauthToken: SecretValue.cfnParameter(new CfnParameter(stack, 'oauth-token', {noEcho: true})),
+                        output: sourceArtifact
+                    }
+                );
+                return mockAction;
+            },
+            createBuildSpec: () => {
+                return {
+                    version: '0.2',
+                    phases: {},
+                    artifacts: {
+                        "secondary-artifacts": {}
+                    },
+                };
+            },
+            additionalPolicyStatements: [new PolicyStatement({})]
+        });
+        throw new Error("The expected exception didn't occur");
+    } catch (err) {
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template value.");
+    }
+});
+
+test("throws error if buildspec doesn't properly have the cfn_template output artifacts", () => {
+    app = new App();
+
+    const stack = new Stack(app, 'test');
+    try {
+        new CdkCicd(stack, 'testing', {
+            stackName: 'thing',
+            sourceAction: (sourceArtifact) => {
+                mockAction = new GitHubSourceAction({
+                        actionName: "pull-from-github",
+                        owner: "mbonig",
+                        repo: "secure-bucket",
+                        oauthToken: SecretValue.cfnParameter(new CfnParameter(stack, 'oauth-token', {noEcho: true})),
+                        output: sourceArtifact
+                    }
+                );
+                return mockAction;
+            },
+            createBuildSpec: () => {
+                return {
+                    version: '0.2',
+                    phases: {},
+                    artifacts: {
+                        "secondary-artifacts": {
+                            cfn_template: {}
+                        }
+                    },
+                };
+            },
+            additionalPolicyStatements: [new PolicyStatement({})]
+        });
+        throw new Error("The expected exception didn't occur");
+    } catch (err) {
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template.files value.");
+    }
+});
+
+test("throws error if buildspec doesn't properly have the secondary artifacts", () => {
+    app = new App();
+
+    const stack = new Stack(app, 'test');
+    try {
+        new CdkCicd(stack, 'testing', {
+            stackName: 'thing',
+            sourceAction: (sourceArtifact) => {
+                mockAction = new GitHubSourceAction({
+                        actionName: "pull-from-github",
+                        owner: "mbonig",
+                        repo: "secure-bucket",
+                        oauthToken: SecretValue.cfnParameter(new CfnParameter(stack, 'oauth-token', {noEcho: true})),
+                        output: sourceArtifact
+                    }
+                );
+                return mockAction;
+            },
+            createBuildSpec: () => {
+                return {
+                    version: '0.2',
+                    phases: {},
+                    artifacts: {},
+                };
+            },
+            additionalPolicyStatements: [new PolicyStatement({})]
+        });
+        throw new Error("The expected exception didn't occur");
+    } catch (err) {
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts value.");
+    }
+});
+
+test("throws error if buildspec doesn't properly have the lambda artifacts", () => {
+    app = new App();
+
+    const stack = new Stack(app, 'test');
+    try {
+        new CdkCicd(stack, 'testing', {
+            stackName: 'thing',
+            sourceAction: (sourceArtifact) => {
+                mockAction = new GitHubSourceAction({
+                        actionName: "pull-from-github",
+                        owner: "mbonig",
+                        repo: "secure-bucket",
+                        oauthToken: SecretValue.cfnParameter(new CfnParameter(stack, 'oauth-token', {noEcho: true})),
+                        output: sourceArtifact
+                    }
+                );
+                return mockAction;
+            },
+            createBuildSpec: () => {
+                return {
+                    version: '0.2',
+                    phases: {},
+                    artifacts: {
+                        "secondary-artifacts": {
+                            "cfn_template": {files: "template.yaml"}
+                        }
+                    },
+                };
+            },
+            hasLambdas: true,
+            additionalPolicyStatements: [new PolicyStatement({})]
+        });
+        throw new Error("The expected exception didn't occur");
+    } catch (err) {
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.lambda_package value when hasLambdas is true.");
+    }
+});
+
+test("throws error if buildspec doesn't properly have the lambda artifacts files", () => {
+    app = new App();
+
+    const stack = new Stack(app, 'test');
+    try {
+        new CdkCicd(stack, 'testing', {
+            stackName: 'thing',
+            sourceAction: (sourceArtifact) => {
+                mockAction = new GitHubSourceAction({
+                        actionName: "pull-from-github",
+                        owner: "mbonig",
+                        repo: "secure-bucket",
+                        oauthToken: SecretValue.cfnParameter(new CfnParameter(stack, 'oauth-token', {noEcho: true})),
+                        output: sourceArtifact
+                    }
+                );
+                return mockAction;
+            },
+            createBuildSpec: () => {
+                return {
+                    version: '0.2',
+                    phases: {},
+                    artifacts: {
+                        "secondary-artifacts": {
+                            "cfn_template": {files: "template.yaml"},
+                            "lambda_package": {}
+                        }
+                    },
+                };
+            },
+            hasLambdas: true,
+            additionalPolicyStatements: [new PolicyStatement({})]
+        });
+        throw new Error("The expected exception didn't occur");
+    } catch (err) {
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.lambda_package.files value when hasLambdas is true.");
+    }
+});

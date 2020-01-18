@@ -5,6 +5,7 @@ import {CfnParameter, SecretValue, Stack} from "@aws-cdk/core";
 import {GitHubSourceAction} from "@aws-cdk/aws-codepipeline-actions";
 import {PolicyStatement} from "@aws-cdk/aws-iam";
 import cdk = require('@aws-cdk/core');
+import {BuildSpecFactory} from "../lib/buildspec-factory";
 
 const app = new cdk.App();
 const stack = new Stack(app, 'testing-stack');
@@ -19,7 +20,7 @@ new CdkCicd(stack, 'testing-project-cicd', {
         }
     ),
     createBuildSpec(): any {
-        return {};
+        return BuildSpecFactory.withoutLambda();
     },
     additionalPolicyStatements: [
         new PolicyStatement({

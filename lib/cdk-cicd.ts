@@ -27,7 +27,7 @@ export class CdkCicd extends Construct {
         let s3DeployAction: S3DeployAction;
         const lambdaBucket = new Bucket(this, `${id}-artifact-bucket`, {versioned: true});
         const sourceCode = new Artifact("source");
-        const deployArtifacts = new Artifact('cfn_templates');
+        const deployArtifacts = new Artifact('cfn_template');
         const lambdaPackage = new Artifact('lambda_package');
 
 
@@ -38,8 +38,22 @@ export class CdkCicd extends Construct {
                 value: lambdaBucket.bucketName
             };
         }
+        let buildSpec = props.createBuildSpec();
+        if (!buildSpec.artifacts["secondary-artifacts"]) {
+            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts value.");
+        } else if (!buildSpec.artifacts["secondary-artifacts"].cfn_template) {
+            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template value.");
+        } else if (!buildSpec.artifacts["secondary-artifacts"].cfn_template.files){
+            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template.files value.");
+        }
+
+        if (props.hasLambdas && !buildSpec.artifacts["secondary-artifacts"].lambda_package) {
+            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.lambda_package value when hasLambdas is true.");
+        } else if (props.hasLambdas && !buildSpec.artifacts["secondary-artifacts"].lambda_package.files){
+            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.lambda_package.files value when hasLambdas is true.");
+        }
         const project = new PipelineProject(this, `${id}-build-project`, {
-            buildSpec: BuildSpec.fromObject(props.createBuildSpec()),
+            buildSpec: BuildSpec.fromObject(buildSpec),
             environment: {
                 buildImage: LinuxBuildImage.AMAZON_LINUX_2_2,
                 computeType: ComputeType.SMALL,
@@ -115,47 +129,6 @@ export class CdkCicd extends Construct {
                 }
             ]
         });
-
-    }
-
-    createBuildSpec(): { [key: string]: any; } {
-        const PASSTHROUGH_BUILDSPEC: any = {
-            version: '0.2',
-            phases: {
-                install: {
-                    commands: [
-                        "npm i -g aws-cdk@1.20.0",
-                        "cdk --version"
-                    ]
-                },
-                build: {
-                    commands: [
-                        'env',
-                        'npm i',
-                        'cd lib/handlers && npm i && zip -r ../../lambda.zip * && cd ../..',
-                        'npm run build',
-                        "HASH=$(md5sum lambda.zip | awk '{ print $1 }')",
-                        'mv lambda.zip $HASH.zip',
-                        `cdk synth -c s3_deploy_bucket=$S3_LAMBDA_BUCKET -c lambda_hash=$HASH > template.yaml`,
-                        'cat template.yaml'
-                    ],
-                },
-            },
-            artifacts: {
-                'secondary-artifacts': {
-                    'cfn_templates': {
-                        files: 'template.yaml'
-                    },
-                    lambda_package: {
-                        files: [
-                            "*.zip"
-                        ],
-                        "discard-paths": true
-                    }
-                }
-            },
-        };
-        return PASSTHROUGH_BUILDSPEC;
     }
 }
 
