@@ -1,5 +1,7 @@
-*.js
-*.d.ts
+lib/*.js
+lib/*.d.ts
+bin/*.js
+bin/*.d.ts
 node_modules
 
 # CDK asset staging directory
@@ -9,3 +11,5 @@ cdk.out
 dist/
 packages-microsoft-prod.deb
 tsconfig.json
+
+.idea/

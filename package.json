@@ -53,8 +53,10 @@
     "jest": "^24.9.0",
     "jsii": "^0.21.1",
     "jsii-pacmak": "^0.21.1",
+    "sinon": "^8.1.0",
     "ts-jest": "^24.3.0",
     "ts-node": "^8.1.0",
+    "ts-sinon": "^1.0.24",
     "typescript": "^3.7.5"
   },
   "dependencies": {
