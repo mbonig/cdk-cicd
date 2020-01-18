@@ -14,12 +14,12 @@ import {
 } from '@aws-cdk/aws-codebuild';
 import {Bucket} from '@aws-cdk/aws-s3';
 import {CloudFormationCapabilities} from '@aws-cdk/aws-cloudformation';
-import {CdkCicdProps} from "./cdk-cicd-props";
+import {PolicyStatement} from "@aws-cdk/aws-iam";
 
 export class CdkCicd extends Construct {
     codePipeline: Pipeline | undefined;
 
-    constructor(scope: Construct, id: string, props: CdkCicdProps) {
+    constructor(scope: Construct, id: string, props: ICdkCicdProps) {
         super(scope, id);
 
         const useLambda = props.hasLambdas || false;
@@ -42,7 +42,7 @@ export class CdkCicd extends Construct {
         if (buildSpec.artifacts.name !== "cfn_template") {
             throw new Error("Please provide a BuildSpec that has an .artifacts.name value of 'cfn_template'.");
         }
-        if (!buildSpec.artifacts.files || !buildSpec.artifacts.files.length){
+        if (!buildSpec.artifacts.files || !buildSpec.artifacts.files.length) {
             throw new Error("Please provide a BuildSpec that has an .artifacts.files value.");
         }
 
@@ -130,5 +130,17 @@ export class CdkCicd extends Construct {
         });
     }
 }
+
+export interface ICdkCicdProps {
+    additionalPolicyStatements?: PolicyStatement[]
+    readonly buildspec?: any;
+    hasLambdas?: boolean;
+    readonly stackName: string;
+
+    sourceAction(sourceArtifact: Artifact): IAction;
+
+    createBuildSpec(): any;
+}
+
 
 
