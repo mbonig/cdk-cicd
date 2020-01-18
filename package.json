@@ -1,0 +1,78 @@
+{
+  "name": "cdk-cicd",
+  "version": "0.1.0",
+  "description": "A CDK Construct that creates a CodePipeline that will build and deploy a CDK Stack",
+  "main": "lib/cdk-cicd.js",
+  "types": "lib/cdk-cicd.d.ts",
+  "keywords": [
+    "cdk",
+    "cicd",
+    "codepipeline"
+  ],
+  "author": {
+    "name": "Matthew Bonig",
+    "email": "matthew.bonig@gmail.com",
+    "twitter": "mattbonig"
+  },
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/mbonig/cdk-cicd.git",
+    "type": "git"
+  },
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "python": {
+        "distName": "mbonig.cdk_cicd",
+        "module": "mbonig.cdk_cicd"
+      },
+      "java": {
+        "package": "com.matthewbonig.cdk_cicd",
+        "maven": {
+          "groupId": "com.matthewbonig.cdk_cicd",
+          "artifactId": "cdk-cicd"
+        }
+      },
+      "dotnet": {
+        "namespace": "MBonig.CdkCicd",
+        "packageId": "MBonig.CdkCicd"
+      }
+    }
+  },
+  "scripts": {
+    "build": "jsii",
+    "build:watch": "jsii -w",
+    "package": "jsii-pacmak",
+    "test": "tsc && jest",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "^1.20.0",
+    "@types/jest": "^24.9.0",
+    "@types/node": "^8.10.59",
+    "jest": "^24.9.0",
+    "jsii": "^0.21.1",
+    "jsii-pacmak": "^0.21.1",
+    "ts-jest": "^24.3.0",
+    "ts-node": "^8.1.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-codebuild": "^1.20.0",
+    "@aws-cdk/aws-codepipeline": "^1.20.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.20.0",
+    "@aws-cdk/aws-events": "^1.20.0",
+    "@aws-cdk/aws-events-targets": "^1.20.0",
+    "@aws-cdk/aws-s3": "^1.20.0",
+    "@aws-cdk/core": "^1.20.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/aws-codebuild": "^1.20.0",
+    "@aws-cdk/aws-codepipeline": "^1.20.0",
+    "@aws-cdk/aws-codepipeline-actions": "^1.20.0",
+    "@aws-cdk/aws-events": "^1.20.0",
+    "@aws-cdk/aws-events-targets": "^1.20.0",
+    "@aws-cdk/aws-s3": "^1.20.0",
+    "@aws-cdk/core": "^1.20.0"
+  }
+}
