@@ -18,7 +18,7 @@ function createStack() {
 
     const stack = new Stack(app, 'test');
     new CdkCicd(stack, 'testing', {
-        projectName: 'thing',
+        stackName: 'thing',
         sourceAction: (sourceArtifact) => {
             mockAction = new GitHubSourceAction({
                     actionName: "pull-from-github",
@@ -58,7 +58,7 @@ test('throws error if undefined sourceAction function', () => {
     try {
 
         new CdkCicd(stack, 'testing', {
-            projectName: 'thing',
+            stackName: 'thing',
             // @ts-ignore TS2322
             // @ts-ignore TS6133
             sourceAction: (sourceArtifact) => {
@@ -79,7 +79,7 @@ test("throws error if sourceAction doesn't use the artifact", () => {
     try {
 
         new CdkCicd(stack, 'testing', {
-            projectName: 'thing',
+            stackName: 'thing',
             // @ts-ignore TS2322
             // @ts-ignore TS6133
             sourceAction: (sourceArtifact) => {
@@ -139,7 +139,7 @@ test("adds lambda requirements ", () => {
     const stack = new Stack(app, 'test');
     new CdkCicd(stack, 'testing', {
         hasLambdas: true,
-        projectName: 'thing',
+        stackName: 'thing',
         sourceAction: (sourceArtifact) => {
             mockAction = new GitHubSourceAction({
                     actionName: "pull-from-github",

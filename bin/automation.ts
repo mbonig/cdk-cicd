@@ -3,13 +3,13 @@ import 'source-map-support/register';
 import {CdkCicd} from '../lib/cdk-cicd';
 import {CfnParameter, SecretValue, Stack} from "@aws-cdk/core";
 import {GitHubSourceAction} from "@aws-cdk/aws-codepipeline-actions";
-import cdk = require('@aws-cdk/core');
 import {PolicyStatement} from "@aws-cdk/aws-iam";
+import cdk = require('@aws-cdk/core');
 
 const app = new cdk.App();
 const stack = new Stack(app, 'testing-stack');
 new CdkCicd(stack, 'testing-project-cicd', {
-    projectName: 'testing-project',
+    stackName: 'test-stack',
     sourceAction: (artifact) => new GitHubSourceAction({
             actionName: "pull-from-github",
             owner: "mbonig",
