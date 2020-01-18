@@ -10,6 +10,8 @@ let mockBuildSpec = {
     version: '0.2',
     phases: {},
     artifacts: {
+        "name": "cfn_template",
+        "files": ["template.yaml"],
         "secondary-artifacts": {
             cfn_template: {files: "template.yaml"}
         }
@@ -158,6 +160,8 @@ test("adds lambda requirements ", () => {
                 version: '0.2',
                 phases: {},
                 artifacts: {
+                    "name": "cfn_template",
+                    "files": ["template.json"],
                     "secondary-artifacts": {
                         "cfn_template": {files: "template.yaml"},
                         "lambda_package": {files: ["*.zip"], "discard-paths": true}
@@ -232,7 +236,7 @@ test("throws error if buildspec doesn't properly have the cfn_template output ar
         });
         throw new Error("The expected exception didn't occur");
     } catch (err) {
-        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template value.");
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.name value of 'cfn_template'.");
     }
 });
 
@@ -259,6 +263,8 @@ test("throws error if buildspec doesn't properly have the cfn_template output ar
                     version: '0.2',
                     phases: {},
                     artifacts: {
+                        "name":"",
+                        "files":[],
                         "secondary-artifacts": {
                             cfn_template: {}
                         }
@@ -269,7 +275,7 @@ test("throws error if buildspec doesn't properly have the cfn_template output ar
         });
         throw new Error("The expected exception didn't occur");
     } catch (err) {
-        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template.files value.");
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.name value of 'cfn_template'.");
     }
 });
 
@@ -295,14 +301,16 @@ test("throws error if buildspec doesn't properly have the secondary artifacts", 
                 return {
                     version: '0.2',
                     phases: {},
-                    artifacts: {},
+                    artifacts: {
+                        "name":"cfn_template"
+                    },
                 };
             },
             additionalPolicyStatements: [new PolicyStatement({})]
         });
         throw new Error("The expected exception didn't occur");
     } catch (err) {
-        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.secondary-artifacts value.");
+        expect(err.message).toBe("Please provide a BuildSpec that has an .artifacts.files value.");
     }
 });
 
@@ -329,8 +337,10 @@ test("throws error if buildspec doesn't properly have the lambda artifacts", () 
                     version: '0.2',
                     phases: {},
                     artifacts: {
+                        "name": "cfn_template",
+                        "files": ["template.yaml"],
                         "secondary-artifacts": {
-                            "cfn_template": {files: "template.yaml"}
+
                         }
                     },
                 };
@@ -367,8 +377,9 @@ test("throws error if buildspec doesn't properly have the lambda artifacts files
                     version: '0.2',
                     phases: {},
                     artifacts: {
+                        "name": "cfn_template",
+                        "files": ["template.yaml"],
                         "secondary-artifacts": {
-                            "cfn_template": {files: "template.yaml"},
                             "lambda_package": {}
                         }
                     },

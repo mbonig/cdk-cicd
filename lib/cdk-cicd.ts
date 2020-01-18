@@ -39,17 +39,16 @@ export class CdkCicd extends Construct {
             };
         }
         let buildSpec = props.createBuildSpec();
-        if (!buildSpec.artifacts["secondary-artifacts"]) {
-            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts value.");
-        } else if (!buildSpec.artifacts["secondary-artifacts"].cfn_template) {
-            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template value.");
-        } else if (!buildSpec.artifacts["secondary-artifacts"].cfn_template.files){
-            throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.cfn_template.files value.");
+        if (buildSpec.artifacts.name !== "cfn_template") {
+            throw new Error("Please provide a BuildSpec that has an .artifacts.name value of 'cfn_template'.");
+        }
+        if (!buildSpec.artifacts.files || !buildSpec.artifacts.files.length){
+            throw new Error("Please provide a BuildSpec that has an .artifacts.files value.");
         }
 
         if (props.hasLambdas && !buildSpec.artifacts["secondary-artifacts"].lambda_package) {
             throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.lambda_package value when hasLambdas is true.");
-        } else if (props.hasLambdas && !buildSpec.artifacts["secondary-artifacts"].lambda_package.files){
+        } else if (props.hasLambdas && !buildSpec.artifacts["secondary-artifacts"].lambda_package.files) {
             throw new Error("Please provide a BuildSpec that has an .artifacts.secondary-artifacts.lambda_package.files value when hasLambdas is true.");
         }
         const project = new PipelineProject(this, `${id}-build-project`, {
@@ -90,7 +89,7 @@ export class CdkCicd extends Construct {
 
         const updateAPIStackAction = new CloudFormationCreateUpdateStackAction({
             actionName: 'deploy',
-            templatePath: deployArtifacts.atPath('template.yaml'),
+            templatePath: deployArtifacts.atPath("template.json"),
             adminPermissions: true,
             stackName: `${props.stackName}`,
             capabilities: [CloudFormationCapabilities.NAMED_IAM],
