@@ -4,7 +4,7 @@ The purpose of this Construct is to build a CodePipeline stack that builds and d
 
 ## Usage
 
-Refer to the [bin/automation.ts]() for an example.
+Refer to the [bin/automation.ts](bin/automation.ts) for an example.
 
 ## Properties
 | prop | description | usage 
