@@ -23,9 +23,6 @@ export class BuildSpecFactory {
                 "discard-paths": "yes",
                 name: "cfn_template",
                 'secondary-artifacts': {
-                    'cfn_template': {
-                        files: 'template.yaml'
-                    },
                     lambda_package: {
                         files: [
                             "*.zip"

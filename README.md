@@ -19,7 +19,7 @@ Refer to the [bin/automation.ts](bin/automation.ts) for an example.
 | --- | --- | ---
 | stackName | The CloudFormation Stack to create/update | must be a valid CFN stack name (e.g. some-stack-name) 
 | sourceAction | The Source IAction for CodePipeline | Rather than try to account for all source situations, you just provide your own. The factory function is given the Artifact to use as the output target in your Action. If you don't use this artifact, the construct will fail construction.
-| createBuildSpec | A Factory that returns a BuildSpec object to use | Refer to the [lib/buildspec-factory.ts] for creating these. You can create your own buildspec if you'd like but there are certain requirements. 
+| createBuildSpec | A Factory that returns a BuildSpec object to use | Refer to the [lib/buildspec-factory.ts](lib/buildspec-factory.ts) for creating these. You can create your own buildspec if you'd like but there are certain requirements; you have to have artifacts setup properly.  
 | additionalPolicyStatements | Any additional PolicyStatements you'd like to add to the CodeBuild project Role | Useful if you're going to be making AWS API calls from within your CDK 'synth' process during the build.
 
 ## Contribute
