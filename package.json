@@ -9,6 +9,9 @@
     "cicd",
     "codepipeline"
   ],
+  "awscdkio": {
+    "twitter": "mattbonig"
+  },
   "author": {
     "name": "Matthew Bonig",
     "email": "matthew.bonig@gmail.com",
