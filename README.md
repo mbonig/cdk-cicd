@@ -1,6 +1,8 @@
-# CDK CodePipeline Stack
+# CDK CodePipeline Stack (pre-release)
 
-The purpose of this Construct is to build a CodePipeline stack that builds and deploys a CDK Stack.
+The purpose of this Construct is to build a CodePipeline stack that builds and deploys a CDK Stack. 
+
+This construct is still in development and as such you should use with caution.
 
 # What it creates
 
