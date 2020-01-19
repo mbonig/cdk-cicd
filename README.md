@@ -10,7 +10,8 @@ This will create a CodePipeline pipeline that builds a CDK module and then deplo
 
 ## Usage
 
-Refer to the [bin/automation.ts](bin/automation.ts) for an example.
+
+Refer to the [bin/](bin/) for an examples. 
 
 ## Properties [lib/cdk-cicd.ts](lib/cdk-cicd.ts)
 

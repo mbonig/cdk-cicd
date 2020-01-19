@@ -4,13 +4,14 @@ import {CdkCicd} from '../lib/cdk-cicd';
 import {CfnParameter, SecretValue, Stack} from "@aws-cdk/core";
 import {GitHubSourceAction} from "@aws-cdk/aws-codepipeline-actions";
 import {PolicyStatement} from "@aws-cdk/aws-iam";
-import cdk = require('@aws-cdk/core');
 import {BuildSpecFactory} from "../lib/buildspec-factory";
+import cdk = require('@aws-cdk/core');
 
 const app = new cdk.App();
-const stack = new Stack(app, 'testing-stack');
-new CdkCicd(stack, 'testing-project-cicd', {
-    stackName: 'test-stack',
+const stack = new Stack(app, 'cdk-cicd-with-lambda-example');
+new CdkCicd(stack, 'with-lambda', {
+    stackName: 'some-rando-bucket',
+    hasLambdas: true,
     sourceAction: (artifact) => new GitHubSourceAction({
             actionName: "pull-from-github",
             owner: "mbonig",
@@ -20,15 +21,19 @@ new CdkCicd(stack, 'testing-project-cicd', {
         }
     ),
     createBuildSpec(): any {
-        return BuildSpecFactory.withoutLambda();
+        const withLambda = BuildSpecFactory.nodejs.withLambda();
+
+        // this will be specific to the CDK module pulled in the souceAction above
+        // and should produce a .zip file in the root directory
+        withLambda.phases.build.commands[0] = "npm run lambda:build";
+
+        // if your lambda build process is more complex then you may want to construct a BuildSpec from scratch
+
+        return withLambda;
     },
     additionalPolicyStatements: [
         new PolicyStatement({
             actions: [
-                "rds:ListTagsForResource",
-                "rds:DescribeDBSnapshots",
-                "rds:DescribeDBInstances",
-                "route53:*HostedZone*",
                 "ec2:*Describe*"
             ],
             resources: ['*']

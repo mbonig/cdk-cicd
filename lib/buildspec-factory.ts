@@ -1,6 +1,6 @@
 export class BuildSpecFactory {
-    static withLambda(): any {
-        return {
+    static nodejs = {
+        withLambda: () => ({
             version: '0.2',
             phases: {
                 install: {
@@ -31,32 +31,30 @@ export class BuildSpecFactory {
                     }
                 }
             },
-        };
-    }
-
-    static withoutLambda() {
-        return {
-            version: '0.2',
-            phases: {
-                install: {
-                    "runtime-versions": {
-                        "nodejs": "12"
-                    }
+        }),
+        withoutLambda: () => ({
+                version: '0.2',
+                phases: {
+                    install: {
+                        "runtime-versions": {
+                            "nodejs": "12"
+                        }
+                    },
+                    build: {
+                        commands: [
+                            'npm install',
+                            `npm run cdk synth`,
+                            `mv cdk.out/*.template.json cdk.out/template.json`
+                        ],
+                    },
                 },
-                build: {
-                    commands: [
-                        'npm install',
-                        `npm run cdk synth`,
-                        `mv cdk.out/*.template.json cdk.out/template.json`
-                    ],
-                },
-            },
-            artifacts: {
-                files: ["template.json"],
-                "base-directory": "cdk.out",
-                "discard-paths": "yes",
-                name: "cfn_template"
+                artifacts: {
+                    files: ["template.json"],
+                    "base-directory": "cdk.out",
+                    "discard-paths": "yes",
+                    name: "cfn_template"
+                }
             }
-        };
-    }
+        )
+    };
 }

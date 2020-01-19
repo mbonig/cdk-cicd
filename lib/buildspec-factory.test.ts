@@ -11,16 +11,16 @@ function expectCfnTemplateMatches(buildSpec: any) {
 
 }
 
-test("withoutLambda doesn't setup lambda artifacts", () => {
-    const buildSpec = BuildSpecFactory.withoutLambda();
+test("nodejs.withoutLambda doesn't setup lambda artifacts", () => {
+    const buildSpec = BuildSpecFactory.nodejs.withoutLambda();
     expectCfnTemplateMatches(buildSpec);
     expect(buildSpec.phases.build.commands[0]).toBe("npm install");
     expect(buildSpec.phases.build.commands[1]).toBe("npm run cdk synth");
     expect(buildSpec.phases.build.commands[2]).toBe(`mv cdk.out/*.template.json cdk.out/template.json`);
 });
 
-test("withLambda has lambda artifacts", () => {
-    const buildSpec = BuildSpecFactory.withLambda();
+test("nodejs.withLambda has lambda artifacts", () => {
+    const buildSpec = BuildSpecFactory.nodejs.withLambda();
     expectCfnTemplateMatches(buildSpec);
 
     expect(buildSpec.phases.build.commands[0]).toBe(`echo "you should replace this with your lambda packaging commands"`);
