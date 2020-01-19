@@ -132,13 +132,32 @@ export class CdkCicd extends Construct {
 }
 
 export interface ICdkCicdProps {
-    additionalPolicyStatements?: PolicyStatement[]
-    readonly buildspec?: any;
+    /**
+     * Additional PolicyStatement you'd like applied to the CodeBuild project role.
+     * This comes in useful if your CDK module will need to make API calls to the AWS SDK
+     */
+    additionalPolicyStatements?: PolicyStatement[];
+
+    /**
+     * If your CDK module will be using assets, like Lambdas, then enable this to get a bucket name passed
+     * to the CodeBuild runtime as the S3_LAMBDA_BUCKET environment variable.
+     */
     hasLambdas?: boolean;
+
+    /**
+     * The name of the Stack to create/update with the pipeline
+     */
     readonly stackName: string;
 
+    /**
+     * A source action factory. This is the first step in the pipeline.
+     * @param sourceArtifact - the artifact that source pipeline should put output artifacts
+     */
     sourceAction(sourceArtifact: Artifact): IAction;
 
+    /**
+     * A BuildSpec object factory to use in the CodeBuild pipeline. You can use the [BuildSpecFactory](./buildspec-factory.ts)
+     */
     createBuildSpec(): any;
 }
 
