@@ -12,7 +12,7 @@ This will create a CodePipeline pipeline that builds a CDK module and then deplo
 
 Refer to the [bin/automation.ts](bin/automation.ts) for an example.
 
-## Properties [lib/cdk-cicd-props.ts](lib/cdk-cicd-props.ts)
+## Properties [lib/cdk-cicd.ts](lib/cdk-cicd.ts)
 
 
 | prop | description | usage 
